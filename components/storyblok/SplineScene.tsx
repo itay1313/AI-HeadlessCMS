@@ -14,14 +14,18 @@ const DEFAULT_SCENE =
 export default function SplineScene({
   scene = DEFAULT_SCENE,
   className = "",
+  interactive = true,
 }: {
   scene?: string;
   className?: string;
+  // When true, the scene receives pointer events so its built-in
+  // "look at mouse" interaction tracks the cursor.
+  interactive?: boolean;
 }) {
   return (
     <div
       aria-hidden="true"
-      className={`pointer-events-none absolute inset-0 ${className}`}
+      className={`absolute inset-0 ${interactive ? "" : "pointer-events-none"} ${className}`}
     >
       <Suspense fallback={null}>
         <Spline scene={scene} style={{ width: "100%", height: "100%" }} />

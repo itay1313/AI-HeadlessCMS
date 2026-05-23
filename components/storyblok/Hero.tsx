@@ -37,14 +37,15 @@ export default function Hero({ blok }: { blok: HeroBlok }) {
           <ShaderBackground />
           {/* 3D scene drifts to the right, behind the copy */}
           <SplineScene className="left-auto right-[-12%] top-0 hidden w-[70%] opacity-80 md:block" />
-          {/* Contrast scrim: keeps headline/subtitle AAA-readable over the art */}
+          {/* Contrast scrim: keeps headline/subtitle AAA-readable over the art.
+              pointer-events-none so the cursor reaches the 3D scene behind it. */}
           <div
             aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-ink/30"
+            className="pointer-events-none absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-ink/30"
           />
           <div
             aria-hidden="true"
-            className="absolute inset-0 bg-[radial-gradient(120%_120%_at_50%_120%,transparent_30%,rgba(10,10,15,0.65)_100%)]"
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_120%_at_50%_120%,transparent_30%,rgba(10,10,15,0.65)_100%)]"
           />
         </>
       )}
