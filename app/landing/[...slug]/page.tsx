@@ -3,6 +3,7 @@ import { draftMode } from "next/headers";
 import type { Metadata } from "next";
 import { getStoryBySlug, listLandingPages } from "@/lib/storyblok/client";
 import StoryblokRenderer from "@/components/storyblok/StoryblokRenderer";
+import AiSectionFab from "@/components/builder/AiSectionFab";
 import type { SeoBlok, StoryblokBlok } from "@/types/storyblok";
 
 export const revalidate = 60;
@@ -76,6 +77,10 @@ export default async function LandingPage({
         >
           ✏️ Edit in Storyblok ↗
         </a>
+      )}
+
+      {showEditButton && (
+        <AiSectionFab storyId={story.id} slug={slug.join("/")} />
       )}
     </main>
   );

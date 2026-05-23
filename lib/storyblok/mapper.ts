@@ -13,7 +13,7 @@ const placeholderAsset = (prompt?: string) =>
     ? { filename: "", alt: "", title: `AI prompt: ${prompt}` }
     : { filename: "", alt: "" };
 
-function mapSection(s: Section): Record<string, unknown> {
+export function mapSection(s: Section): Record<string, unknown> {
   const base = { _uid: uid(), component: s.component };
   switch (s.component) {
     case "hero":

@@ -51,3 +51,20 @@ Hard rules:
 export function buildUserPrompt(brief: { prompt: string }): string {
   return `Generate the landing page for the following user request. Infer audience, tone, sections, and copy from the description. Pick a sensible slug and SEO fields.\n\nREQUEST:\n${brief.prompt}\n\nReturn the JSON object only.`;
 }
+
+// ── Single-section generation (used by the in-page "Add section" feature) ──
+export const SECTION_SYSTEM_PROMPT = `You generate exactly ONE landing-page section as STRICT JSON.
+
+You do NOT write code, HTML, or CSS. Pick ONE component from the menu and fill its fields.
+
+${SYSTEM_PROMPT.split("Allowed components for sections")[1]?.split("Hard rules:")[0]?.trim() ?? ""}
+
+Hard rules:
+1. Respond with ONE JSON section object only (e.g. { "component": "hero", ... }). No prose, no code fences.
+2. Use ONLY a component name from the list above. Never invent names.
+3. NEVER emit raw HTML, scripts, or image URLs. For images set "imagePrompt" to a short description.
+4. Match the user's request as closely as possible (component choice, copy, tone).`;
+
+export function buildSectionUserPrompt(prompt: string): string {
+  return `Create one landing-page section for this request:\n\n${prompt}\n\nReturn a single JSON section object only.`;
+}
