@@ -1,5 +1,7 @@
 import Image from "next/image";
 import { editable } from "./editable";
+import ShaderBackground from "./ShaderBackground";
+import SplineScene from "./SplineScene";
 import type { StoryblokBlok, StoryblokAsset } from "@/types/storyblok";
 
 type HeroBlok = StoryblokBlok<"hero"> & {
@@ -29,13 +31,24 @@ export default function Hero({ blok }: { blok: HeroBlok }) {
       className={`relative overflow-hidden ${surfaces[tone]} px-6 py-28 md:py-40`}
       aria-label="Hero"
     >
-      {/* Ambient background flourishes (decorative) */}
-      {tone === "gradient" && (
-        <div aria-hidden="true">
-          <div className="pointer-events-none absolute -left-32 -top-32 h-96 w-96 rounded-full bg-brand/40 blur-[120px]" />
-          <div className="pointer-events-none absolute -bottom-40 -right-24 h-[28rem] w-[28rem] rounded-full bg-fuchsia-500/30 blur-[140px]" />
-        </div>
+      {/* Animated WebGL + 3D backdrop (dark/gradient heroes only) */}
+      {onDark && (
+        <>
+          <ShaderBackground />
+          {/* 3D scene drifts to the right, behind the copy */}
+          <SplineScene className="left-auto right-[-12%] top-0 hidden w-[70%] opacity-80 md:block" />
+          {/* Contrast scrim: keeps headline/subtitle AAA-readable over the art */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-ink/30"
+          />
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-[radial-gradient(120%_120%_at_50%_120%,transparent_30%,rgba(10,10,15,0.65)_100%)]"
+          />
+        </>
       )}
+
       {tone === "light" && (
         <div
           aria-hidden="true"
@@ -44,7 +57,7 @@ export default function Hero({ blok }: { blok: HeroBlok }) {
       )}
 
       <div
-        className={`container-x relative ${
+        className={`container-x relative z-10 ${
           variant === "split"
             ? "grid items-center gap-12 md:grid-cols-2"
             : "text-center"
@@ -52,7 +65,7 @@ export default function Hero({ blok }: { blok: HeroBlok }) {
       >
         <div className={variant === "centered" ? "mx-auto max-w-4xl" : ""}>
           {blok.headline && (
-            <h1 className="animate-fade-up text-balance font-display text-display-lg font-bold">
+            <h1 className="animate-fade-up text-balance font-display text-display-lg font-bold drop-shadow-sm">
               {blok.headline}
             </h1>
           )}

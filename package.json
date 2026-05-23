@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1",
+    "@splinetool/react-spline": "^4.1.0",
+    "@splinetool/runtime": "^1.12.95",
     "@storyblok/react": "^4.0.0",
     "nanoid": "^5.0.7",
     "next": "^15.0.0",
