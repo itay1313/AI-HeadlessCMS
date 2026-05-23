@@ -20,7 +20,14 @@ const surfaces = {
   gradient: "bg-ink text-white",
 };
 
-export default function Hero({ blok }: { blok: HeroBlok }) {
+export default function Hero({
+  blok,
+  primary = false,
+}: {
+  blok: HeroBlok;
+  // Only the primary (first) hero on a page gets the heavy 3D + shader.
+  primary?: boolean;
+}) {
   const variant = blok.variant ?? "centered";
   const tone = blok.background ?? "light";
   const onDark = tone !== "light";
@@ -31,8 +38,8 @@ export default function Hero({ blok }: { blok: HeroBlok }) {
       className={`relative overflow-hidden ${surfaces[tone]} px-6 py-28 md:py-40`}
       aria-label="Hero"
     >
-      {/* Animated WebGL + 3D backdrop (dark/gradient heroes only) */}
-      {onDark && (
+      {/* Heavy WebGL + 3D backdrop: ONLY on the first hero. */}
+      {onDark && primary && (
         <>
           <ShaderBackground />
           {/* 3D scene drifts to the right, behind the copy */}
@@ -48,6 +55,14 @@ export default function Hero({ blok }: { blok: HeroBlok }) {
             className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_120%_at_50%_120%,transparent_30%,rgba(10,10,15,0.65)_100%)]"
           />
         </>
+      )}
+
+      {/* Secondary dark heroes: cheap static gradient, no WebGL. */}
+      {onDark && !primary && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_90%_at_70%_20%,rgba(99,102,241,0.22),transparent_60%),radial-gradient(60%_80%_at_20%_90%,rgba(168,85,247,0.18),transparent_60%)]"
+        />
       )}
 
       {tone === "light" && (

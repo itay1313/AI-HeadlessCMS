@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, lazy, useEffect, useRef } from "react";
+import { Suspense, lazy, useEffect, useRef, useState } from "react";
 
 // Spline is heavy + WebGL, so load it only on the client, lazily.
 const Spline = lazy(() => import("@splinetool/react-spline"));
@@ -26,9 +26,27 @@ export default function SplineScene({
   interactive?: boolean;
 }) {
   const wrapRef = useRef<HTMLDivElement>(null);
+  // Defer loading the (multi-MB) scene until it's near the viewport.
+  const [load, setLoad] = useState(false);
 
   useEffect(() => {
-    if (!interactive) return;
+    const el = wrapRef.current;
+    if (!el || load) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setLoad(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "200px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [load]);
+
+  useEffect(() => {
+    if (!interactive || !load) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const onMove = (e: PointerEvent) => {
@@ -53,7 +71,7 @@ export default function SplineScene({
 
     window.addEventListener("pointermove", onMove, { passive: true });
     return () => window.removeEventListener("pointermove", onMove);
-  }, [interactive]);
+  }, [interactive, load]);
 
   return (
     <div
@@ -63,9 +81,11 @@ export default function SplineScene({
       // is driven by the forwarded events above, not by real hover.
       className={`pointer-events-none absolute inset-0 ${className}`}
     >
-      <Suspense fallback={null}>
-        <Spline scene={scene} style={{ width: "100%", height: "100%" }} />
-      </Suspense>
+      {load && (
+        <Suspense fallback={null}>
+          <Spline scene={scene} style={{ width: "100%", height: "100%" }} />
+        </Suspense>
+      )}
     </div>
   );
 }
