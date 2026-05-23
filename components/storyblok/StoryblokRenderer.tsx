@@ -11,22 +11,23 @@ import Pricing from "./Pricing";
 import UnknownBlock from "./UnknownBlock";
 import type { StoryblokBlok } from "@/types/storyblok";
 
-const componentMap: Record<string, React.ComponentType<{ blok: never }>> = {
-  hero: Hero as never,
-  text_section: TextSection as never,
-  image_text: ImageTextSection as never,
-  benefits: Benefits as never,
-  features: Features as never,
-  testimonials: Testimonials as never,
-  faq: FAQ as never,
-  cta: CTA as never,
-  form_section: FormSection as never,
-  pricing: Pricing as never,
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const componentMap: Record<string, React.ComponentType<any>> = {
+  hero: Hero,
+  text_section: TextSection,
+  image_text: ImageTextSection,
+  benefits: Benefits,
+  features: Features,
+  testimonials: Testimonials,
+  faq: FAQ,
+  cta: CTA,
+  form_section: FormSection,
+  pricing: Pricing,
 };
 
-export function renderBlok(blok: StoryblokBlok) {
+export function renderBlok(blok: StoryblokBlok, primary = false) {
   const Component = componentMap[blok.component] ?? UnknownBlock;
-  return <Component key={blok._uid} blok={blok as never} />;
+  return <Component key={blok._uid} blok={blok} primary={primary} />;
 }
 
 export default function StoryblokRenderer({
@@ -34,5 +35,15 @@ export default function StoryblokRenderer({
 }: {
   sections: StoryblokBlok[];
 }) {
-  return <>{sections.map(renderBlok)}</>;
+  // Only the FIRST hero gets the heavy 3D scene + shader. Any other hero
+  // uses a lightweight static background — keeps the page fast and avoids
+  // multiple robots / WebGL contexts.
+  const firstHeroUid = sections.find((s) => s.component === "hero")?._uid;
+  return (
+    <>
+      {sections.map((blok) =>
+        renderBlok(blok, blok.component === "hero" && blok._uid === firstHeroUid),
+      )}
+    </>
+  );
 }

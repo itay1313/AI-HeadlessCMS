@@ -3,6 +3,8 @@ import { draftMode } from "next/headers";
 import type { Metadata } from "next";
 import { getStoryBySlug, listLandingPages } from "@/lib/storyblok/client";
 import StoryblokRenderer from "@/components/storyblok/StoryblokRenderer";
+import AiSectionFab from "@/components/builder/AiSectionFab";
+import LandingNavTools from "@/components/builder/LandingNavTools";
 import type { SeoBlok, StoryblokBlok } from "@/types/storyblok";
 
 export const revalidate = 60;
@@ -54,9 +56,7 @@ export default async function LandingPage({
   if (!story) notFound();
 
   const sections = (story.content.sections ?? []) as StoryblokBlok[];
-  const spaceId = process.env.NEXT_PUBLIC_STORYBLOK_SPACE_ID ?? "";
-  const editUrl = `https://app.storyblok.com/#/me/spaces/${spaceId}/stories/0/0/${story.id}`;
-  const showEditButton = process.env.NODE_ENV !== "production";
+  const showDevTools = process.env.NODE_ENV !== "production";
 
   return (
     <main id="main">
@@ -67,15 +67,15 @@ export default async function LandingPage({
       )}
       <StoryblokRenderer sections={sections} />
 
-      {showEditButton && spaceId && (
-        <a
-          href={editUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="fixed bottom-5 right-5 z-50 inline-flex items-center gap-2 rounded-full bg-gray-900 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-gray-900/20 transition hover:bg-gray-800"
-        >
-          ✏️ Edit in Storyblok ↗
-        </a>
+      {showDevTools && (
+        <>
+          <LandingNavTools
+            storyId={story.id}
+            name={story.name}
+            published={Boolean(story.published_at)}
+          />
+          <AiSectionFab storyId={story.id} slug={slug.join("/")} />
+        </>
       )}
     </main>
   );

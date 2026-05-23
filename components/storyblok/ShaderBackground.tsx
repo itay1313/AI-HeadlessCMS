@@ -89,7 +89,7 @@ export default function ShaderBackground({
     const uTime = gl.getUniformLocation(program, "u_time");
     const uRes = gl.getUniformLocation(program, "u_res");
 
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     const resize = () => {
       const { clientWidth: w, clientHeight: h } = canvas;
       canvas.width = Math.max(1, Math.floor(w * dpr));
@@ -105,16 +105,32 @@ export default function ShaderBackground({
     ).matches;
 
     let raf = 0;
+    let visible = true;
     const start = performance.now();
     const draw = (now: number) => {
       gl.uniform1f(uTime, (now - start) / 1000);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
-      if (!reduce) raf = requestAnimationFrame(draw);
+      if (!reduce && visible) raf = requestAnimationFrame(draw);
     };
     draw(start);
 
+    // Pause the render loop whenever the hero scrolls out of view — no point
+    // burning GPU/CPU on an off-screen canvas.
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        const wasVisible = visible;
+        visible = entry.isIntersecting;
+        if (visible && !wasVisible && !reduce) {
+          raf = requestAnimationFrame(draw);
+        }
+      },
+      { threshold: 0 },
+    );
+    io.observe(canvas);
+
     return () => {
       cancelAnimationFrame(raf);
+      io.disconnect();
       window.removeEventListener("resize", resize);
     };
   }, []);

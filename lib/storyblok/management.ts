@@ -71,10 +71,14 @@ export async function publishStory(storyId: number) {
   return mapi(`/stories/${storyId}/publish`, { method: "GET" });
 }
 
+export async function unpublishStory(storyId: number) {
+  return mapi(`/stories/${storyId}/unpublish`, { method: "GET" });
+}
+
 export async function getStoryById(storyId: number) {
-  return mapi<{ story: { id: number; full_slug: string; content: unknown } }>(
-    `/stories/${storyId}`,
-  );
+  return mapi<{
+    story: { id: number; name: string; full_slug: string; content: unknown };
+  }>(`/stories/${storyId}`);
 }
 
 export async function findStoryBySlug(fullSlug: string) {
