@@ -1,0 +1,16 @@
+node_modules
+.next
+out
+.env
+.env.local
+.env*.local
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts
+
+# Local editor / agent config
+.claude/
+
+# Pre-existing unrelated assets (not part of this project)
+WM-Posts-Blocks-Explained.pptx
+wm-posts-blocks/
