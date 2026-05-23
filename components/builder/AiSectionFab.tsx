@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const EXAMPLES = [
   "Add a section with a big image and a bold title",
@@ -16,6 +17,7 @@ export default function AiSectionFab({
   storyId: number;
   slug: string;
 }) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [busy, setBusy] = useState(false);
@@ -54,8 +56,15 @@ export default function AiSectionFab({
         throw new Error(json?.message ?? json?.error ?? "Failed to add section");
       }
       setDone(json.component);
-      // Give Storyblok's CDN a moment, then reload to show the new section.
-      setTimeout(() => window.location.reload(), 1200);
+      setPrompt("");
+      // Give Storyblok's CDN a moment, then re-fetch server data WITHOUT a
+      // full reload — keeps the modal + button mounted so you can add more.
+      setTimeout(() => {
+        router.refresh();
+        setBusy(false);
+        // Clear the success note shortly after so the form is ready again.
+        setTimeout(() => setDone(null), 2500);
+      }, 1200);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed");
       setBusy(false);
@@ -147,7 +156,7 @@ export default function AiSectionFab({
             )}
             {done && (
               <div className="mt-4 rounded-xl border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-800">
-                Added a “{done}” section. Reloading…
+                Added a “{done}” section ✓ — add another, or close.
               </div>
             )}
 
