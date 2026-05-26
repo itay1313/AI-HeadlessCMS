@@ -5,6 +5,7 @@ import { getStoryBySlug, listLandingPages } from "@/lib/storyblok/client";
 import StoryblokRenderer from "@/components/storyblok/StoryblokRenderer";
 import AiSectionFab from "@/components/builder/AiSectionFab";
 import LandingNavTools from "@/components/builder/LandingNavTools";
+import { templateStyle } from "@/lib/theme";
 import type { SeoBlok, StoryblokBlok } from "@/types/storyblok";
 
 export const revalidate = 60;
@@ -59,7 +60,7 @@ export default async function LandingPage({
   const showDevTools = process.env.NODE_ENV !== "production";
 
   return (
-    <main id="main">
+    <main id="main" style={templateStyle(story.content.template)}>
       {dm.isEnabled && (
         <div className="bg-yellow-300 px-4 py-2 text-center text-sm font-medium text-ink">
           Draft preview · <a href="/api/draft" className="underline">exit</a>

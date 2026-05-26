@@ -139,6 +139,7 @@ export function mapDraftToStoryContent(
   return {
     _uid: uid(),
     component: "landing_page",
+    template: draft.template ?? "modern",
     seo: [
       {
         _uid: uid(),

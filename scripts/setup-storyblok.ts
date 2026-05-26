@@ -87,8 +87,16 @@ const components: ComponentDef[] = [
     is_root: true,
     is_nestable: false,
     schema: {
-      seo: bloks(0, ["seo"], { maximum: 1 }),
-      sections: bloks(1, [
+      template: opt(0, [
+        "modern",
+        "editorial",
+        "vibrant",
+        "fresh",
+        "sunset",
+        "minimal",
+      ]),
+      seo: bloks(1, ["seo"], { maximum: 1 }),
+      sections: bloks(2, [
         "hero",
         "text_section",
         "image_text",
@@ -100,9 +108,9 @@ const components: ComponentDef[] = [
         "form_section",
         "pricing",
       ]),
-      generated_by_ai: boolean(2),
-      ai_brief: textarea(3),
-      created_by: text(4),
+      generated_by_ai: boolean(3),
+      ai_brief: textarea(4),
+      created_by: text(5),
     },
   },
   // ── SEO ────────────────────────────────────────────────────────

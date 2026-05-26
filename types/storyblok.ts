@@ -26,6 +26,7 @@ export type SeoBlok = {
 export type LandingPageContent = {
   _uid: string;
   component: "landing_page";
+  template?: string;
   seo: SeoBlok[];
   sections: StoryblokBlok[];
   generated_by_ai?: boolean;

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Inter, Space_Grotesk, Fraunces, Sora } from "next/font/google";
 import "./globals.css";
 import StoryblokProvider from "./storyblok-provider";
 
@@ -9,10 +9,20 @@ const inter = Inter({
   display: "swap",
 });
 
-// Display font for big headlines — modern, geometric, distinctive.
-const display = Space_Grotesk({
+// Display font pool — AI templates pick one per page via CSS vars.
+const grotesk = Space_Grotesk({
   subsets: ["latin"],
-  variable: "--font-display",
+  variable: "--font-grotesk",
+  display: "swap",
+});
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-serif",
+  display: "swap",
+});
+const sora = Sora({
+  subsets: ["latin"],
+  variable: "--font-sora",
   display: "swap",
 });
 
@@ -27,7 +37,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${display.variable}`}>
+    <html
+      lang="en"
+      className={`${inter.variable} ${grotesk.variable} ${fraunces.variable} ${sora.variable}`}
+    >
       <body>
         <a href="#main" className="skip-link">
           Skip to content

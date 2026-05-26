@@ -11,6 +11,10 @@ Allowed top-level shape:
 {
   "pageName": string (3-80 chars),
   "slug": kebab-case string (e.g. "spring-launch"),
+  "template": one of "modern" | "editorial" | "vibrant" | "fresh" | "sunset" | "minimal"
+    (choose the design template that best fits the brand tone:
+     modern=indigo/geometric, editorial=slate/serif, vibrant=rose/bold,
+     fresh=emerald/clean, sunset=amber/warm, minimal=violet/restrained),
   "seo": {
     "metaTitle": string <= 60 chars,
     "metaDescription": string <= 160 chars,
