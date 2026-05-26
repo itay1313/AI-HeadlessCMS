@@ -1,9 +1,87 @@
 import Link from "next/link";
 import { listLandingPages } from "@/lib/storyblok/client";
+import RecentList from "@/components/builder/RecentList";
 
 export const dynamic = "force-dynamic";
 
 const spaceId = process.env.NEXT_PUBLIC_STORYBLOK_SPACE_ID ?? "";
+
+const sw = "1.8";
+const ic = "h-6 w-6";
+
+const ACTIONS = [
+  {
+    title: "Generate from a prompt",
+    desc: "Describe your page — AI writes the copy, picks sections and a design.",
+    href: "/builder/new",
+    external: false,
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={sw} className={ic}>
+        <path d="M5 19 19 5M14 5h.01M19 10h.01M9 4h.01M4 9h.01" strokeLinecap="round" />
+        <path d="m13 7 4 4" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    title: "Pick a design template",
+    desc: "AI styles each page — modern, editorial, vibrant, fresh, and more.",
+    href: "/builder/new",
+    external: false,
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={sw} className={ic}>
+        <rect x="3" y="3" width="18" height="18" rx="3" />
+        <path d="M3 9h18M9 21V9" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    title: "Browse your pages",
+    desc: "See everything you've built. Open, edit, publish, or hide.",
+    href: "#recent",
+    external: false,
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={sw} className={ic}>
+        <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+  {
+    title: "Edit content in Storyblok",
+    desc: "Your team changes text, images, and CTAs visually — no code.",
+    href: `https://app.storyblok.com/#/me/spaces/${spaceId}`,
+    external: true,
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={sw} className={ic}>
+        <rect x="4" y="4" width="16" height="16" rx="3" />
+        <path d="M9 9h5M9 13h6M9 9v8" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+  {
+    title: "Add a section with AI",
+    desc: "On any page, describe a section and the AI appends it instantly.",
+    href: "/builder/new",
+    external: false,
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={sw} className={ic}>
+        <rect x="3" y="3" width="18" height="18" rx="3" />
+        <path d="M12 8v8M8 12h8" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    title: "View the live site",
+    desc: "See published pages exactly as your visitors do.",
+    href: "/",
+    external: true,
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={sw} className={ic}>
+        <circle cx="12" cy="12" r="9" />
+        <path d="M3 12h18M12 3c2.5 2.5 2.5 15 0 18M12 3c-2.5 2.5-2.5 15 0 18" />
+      </svg>
+    ),
+  },
+];
 
 export default async function BuilderHome() {
   let stories: Awaited<ReturnType<typeof listLandingPages>> = [];
@@ -14,194 +92,91 @@ export default async function BuilderHome() {
     error = e instanceof Error ? e.message : "load_failed";
   }
 
-  const hasPages = stories.length > 0;
-  const publishedCount = stories.filter((s) => s.published_at).length;
-  const draftCount = stories.length - publishedCount;
+  const items = stories.map((s) => ({
+    id: s.id,
+    name: s.name,
+    fullSlug: s.full_slug,
+    published: Boolean(s.published_at),
+  }));
+  const publishedCount = items.filter((i) => i.published).length;
 
   return (
-    <div className="space-y-10">
-      {/* Header */}
-      <header className="flex flex-wrap items-end justify-between gap-6 border-b border-gray-100 pb-8">
+    <div className="space-y-8">
+      {/* Top bar */}
+      <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-4xl font-bold tracking-tight md:text-5xl">
-            Landing pages
-          </h1>
-          <p className="mt-2 text-ink-muted">
-            Generate with AI, edit in Storyblok, publish in one click.
-          </p>
+          <h1 className="font-display text-2xl font-bold">Welcome back</h1>
+          <p className="text-sm text-white/45">What do you want to build today?</p>
         </div>
-        <Link
-          href="/builder/new"
-          className="inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-ink-soft"
-        >
-          <span aria-hidden="true" className="text-base leading-none">
-            +
+        <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm">
+          <span className="h-2 w-2 rounded-full bg-emerald-400" />
+          <span className="text-white/70">
+            {items.length} pages · {publishedCount} live
           </span>
-          New page
-        </Link>
-      </header>
-
-      {/* Stats */}
-      <div className="grid grid-cols-3 divide-x divide-gray-100 overflow-hidden rounded-2xl border border-gray-100 bg-white">
-        <Stat label="Total" value={stories.length} />
-        <Stat label="Published" value={publishedCount} dot="bg-emerald-500" />
-        <Stat label="Drafts" value={draftCount} dot="bg-gray-300" />
+        </div>
       </div>
 
-      {/* Error state */}
-      {error && (
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-800">
-          <strong>Couldn&apos;t reach Storyblok.</strong> Check your tokens in{" "}
-          <code className="rounded bg-white px-1">.env.local</code>.
-          <div className="mt-1 font-mono text-xs opacity-70">{error}</div>
-        </div>
-      )}
-
-      {/* Empty state */}
-      {!error && !hasPages && (
-        <div className="rounded-3xl border border-dashed border-gray-200 bg-white p-16 text-center">
-          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-ink text-2xl text-white">
-            +
-          </div>
-          <h3 className="font-display text-2xl font-bold">No pages yet</h3>
-          <p className="mx-auto mt-2 max-w-sm text-ink-muted">
-            Generate your first landing page with AI — it takes about 30 seconds.
-          </p>
-          <Link
-            href="/builder/new"
-            className="mt-7 inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5"
-          >
-            Create your first page →
-          </Link>
-        </div>
-      )}
-
-      {/* Pages */}
-      {!error && hasPages && (
-        <section>
-          <h2 className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-ink-muted">
-            All pages · {stories.length}
+      {/* Feature banner */}
+      <Link
+        href="/builder/new"
+        className="group relative block overflow-hidden rounded-3xl border border-white/10 p-8 md:p-10"
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/15 via-fuchsia-600/15 to-indigo-600/20" />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-10 -top-16 h-56 w-56 rounded-full bg-fuchsia-500/25 blur-[90px]"
+        />
+        <div className="relative">
+          <span className="inline-flex items-center gap-2 rounded-full bg-black/40 px-3 py-1 text-xs font-semibold text-white/90 ring-1 ring-white/15">
+            <span className="rounded-full bg-white px-1.5 text-[10px] font-bold text-ink">NEW</span>
+            AI page generation
+          </span>
+          <h2 className="mt-4 font-display text-3xl font-bold md:text-4xl">
+            Describe it.{" "}
+            <span className="bg-gradient-to-r from-amber-300 to-fuchsia-300 bg-clip-text text-transparent">
+              We build it.
+            </span>
           </h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {stories.map((s) => {
-              const slug = s.full_slug.replace(/^landing\//, "");
-              const published = Boolean(s.published_at);
-              return (
-                <article
-                  key={s.id}
-                  className="group flex flex-col rounded-2xl border border-gray-200 bg-white p-5 transition hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-soft"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex min-w-0 items-center gap-3">
-                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gray-100 font-display text-lg font-bold text-ink">
-                        {s.name.charAt(0).toUpperCase()}
-                      </span>
-                      <div className="min-w-0">
-                        <h3 className="truncate font-semibold tracking-tight">
-                          {s.name}
-                        </h3>
-                        <div className="truncate font-mono text-xs text-ink-muted">
-                          /{s.full_slug}
-                        </div>
-                      </div>
-                    </div>
-                    <span className="inline-flex shrink-0 items-center gap-1.5 text-xs font-medium text-ink-muted">
-                      <span
-                        aria-hidden="true"
-                        className={`h-1.5 w-1.5 rounded-full ${published ? "bg-emerald-500" : "bg-gray-300"}`}
-                      />
-                      {published ? "Live" : "Draft"}
-                    </span>
-                  </div>
-
-                  <div className="mt-5 flex gap-2">
-                    <Link
-                      href={`/landing/${slug}`}
-                      className="flex-1 rounded-full border border-gray-200 px-3 py-2 text-center text-xs font-semibold text-ink transition hover:bg-gray-50"
-                    >
-                      View
-                    </Link>
-                    <a
-                      href={`https://app.storyblok.com/#/me/spaces/${spaceId}/stories/0/0/${s.id}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex-1 rounded-full bg-ink px-3 py-2 text-center text-xs font-semibold text-white transition hover:bg-ink-soft"
-                    >
-                      Edit ↗
-                    </a>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-        </section>
-      )}
-
-      {/* How it works */}
-      <section className="rounded-3xl border border-gray-100 bg-gray-50/60 p-8">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <h2 className="font-display text-xl font-bold">How it works</h2>
-          <a
-            href={`https://app.storyblok.com/#/me/spaces/${spaceId}`}
-            target="_blank"
-            rel="noreferrer"
-            className="rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm font-medium text-ink transition hover:bg-gray-50"
-          >
-            Open Storyblok ↗
-          </a>
+          <p className="mt-2 max-w-xl text-white/70">
+            Turn one prompt into a full, themed landing page — synced to
+            Storyblok and ready to publish.
+          </p>
+          <span className="mt-6 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-ink transition group-hover:-translate-y-0.5">
+            Create a page →
+          </span>
         </div>
-        <div className="mt-6 grid gap-4 md:grid-cols-3">
-          <FlowStep n="1" title="Generate" body="Describe your audience and product. AI returns a structured page in seconds." />
-          <FlowStep n="2" title="Edit in Storyblok" body="Your team changes any field — text, images, CTAs — visually, no code." />
-          <FlowStep n="3" title="Publish" body="One click publishes the story and updates your live site instantly." />
-        </div>
-      </section>
-    </div>
-  );
-}
+      </Link>
 
-function Stat({
-  label,
-  value,
-  dot,
-}: {
-  label: string;
-  value: number;
-  dot?: string;
-}) {
-  return (
-    <div className="px-6 py-5">
-      <div className="flex items-center gap-2">
-        {dot && (
-          <span aria-hidden="true" className={`h-2 w-2 rounded-full ${dot}`} />
-        )}
-        <span className="font-display text-3xl font-bold tracking-tight">
-          {value}
-        </span>
+      {/* Action cards */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {ACTIONS.map((a) => {
+          const inner = (
+            <>
+              <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-white/5 text-white/80 ring-1 ring-white/10 transition group-hover:text-white">
+                {a.icon}
+              </span>
+              <h3 className="mt-4 font-semibold tracking-tight">{a.title}</h3>
+              <p className="mt-1.5 text-sm leading-relaxed text-white/45">
+                {a.desc}
+              </p>
+            </>
+          );
+          const cls =
+            "group rounded-3xl border border-white/[0.07] bg-white/[0.025] p-6 transition hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.05]";
+          return a.external ? (
+            <a key={a.title} href={a.href} target="_blank" rel="noreferrer" className={cls}>
+              {inner}
+            </a>
+          ) : (
+            <Link key={a.title} href={a.href} className={cls}>
+              {inner}
+            </Link>
+          );
+        })}
       </div>
-      <div className="mt-1 text-xs uppercase tracking-wider text-ink-muted">
-        {label}
-      </div>
-    </div>
-  );
-}
 
-function FlowStep({
-  n,
-  title,
-  body,
-}: {
-  n: string;
-  title: string;
-  body: string;
-}) {
-  return (
-    <div className="rounded-2xl bg-white p-5 ring-1 ring-black/[0.04]">
-      <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-ink text-sm font-bold text-white">
-        {n}
-      </span>
-      <h3 className="mt-3 font-semibold tracking-tight">{title}</h3>
-      <p className="mt-1.5 text-sm text-ink-muted">{body}</p>
+      {/* Recent / Drafts */}
+      <RecentList items={items} error={error} spaceId={spaceId} />
     </div>
   );
 }

@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { isAuthorizedPage } from "@/lib/auth";
+import Sidebar from "@/components/builder/Sidebar";
 
 export default async function BuilderLayout({
   children,
@@ -10,41 +10,19 @@ export default async function BuilderLayout({
   const ok = await isAuthorizedPage();
   if (!ok) redirect("/builder-login");
 
+  const spaceId = process.env.NEXT_PUBLIC_STORYBLOK_SPACE_ID ?? "";
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="sticky top-0 z-10 border-b border-gray-200 bg-white/80 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
-          <Link href="/builder" className="flex items-center gap-2">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-ink text-sm font-bold text-white">
-              AI
-            </span>
-            <span className="font-bold">Landing Studio</span>
-          </Link>
-          <nav className="flex items-center gap-1 text-sm">
-            <Link
-              href="/builder"
-              className="rounded-md px-3 py-1.5 font-medium text-gray-700 hover:bg-gray-100"
-            >
-              Pages
-            </Link>
-            <Link
-              href="/builder/new"
-              className="rounded-md px-3 py-1.5 font-medium text-gray-700 hover:bg-gray-100"
-            >
-              New
-            </Link>
-            <a
-              href={`https://app.storyblok.com/#/me/spaces/${process.env.NEXT_PUBLIC_STORYBLOK_SPACE_ID ?? ""}`}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-md px-3 py-1.5 font-medium text-gray-700 hover:bg-gray-100"
-            >
-              Storyblok ↗
-            </a>
-          </nav>
-        </div>
-      </header>
-      <div className="mx-auto max-w-6xl px-6 py-10">{children}</div>
+    <div className="relative min-h-screen bg-[#0a0a0f] text-white">
+      {/* Ambient glow */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 [background:radial-gradient(60%_45%_at_50%_-5%,rgba(99,102,241,0.14),transparent_70%)]"
+      />
+      <Sidebar spaceId={spaceId} />
+      <main className="relative pl-[84px]">
+        <div className="mx-auto max-w-5xl px-6 py-10 md:px-10">{children}</div>
+      </main>
     </div>
   );
 }
