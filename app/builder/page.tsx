@@ -5,16 +5,6 @@ export const dynamic = "force-dynamic";
 
 const spaceId = process.env.NEXT_PUBLIC_STORYBLOK_SPACE_ID ?? "";
 
-// Deterministic soft gradient per card based on the page id.
-const GRADIENTS = [
-  "from-indigo-500 to-purple-600",
-  "from-sky-500 to-indigo-600",
-  "from-fuchsia-500 to-pink-600",
-  "from-violet-500 to-indigo-600",
-  "from-cyan-500 to-blue-600",
-  "from-rose-500 to-fuchsia-600",
-];
-
 export default async function BuilderHome() {
   let stories: Awaited<ReturnType<typeof listLandingPages>> = [];
   let error: string | null = null;
@@ -29,47 +19,34 @@ export default async function BuilderHome() {
   const draftCount = stories.length - publishedCount;
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-10">
       {/* Header */}
-      <header className="relative overflow-hidden rounded-3xl bg-ink px-8 py-10 text-white md:px-12 md:py-14">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -right-16 -top-20 h-72 w-72 rounded-full bg-brand/40 blur-[100px]"
-        />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -bottom-24 left-1/3 h-72 w-72 rounded-full bg-fuchsia-500/25 blur-[110px]"
-        />
-        <div className="relative flex flex-wrap items-end justify-between gap-6">
-          <div>
-            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">
-              Dashboard
-            </span>
-            <h1 className="mt-2 font-display text-4xl font-bold tracking-tight md:text-5xl">
-              Your landing pages
-            </h1>
-            <p className="mt-3 max-w-lg text-white/70">
-              Generate with AI, edit visually in Storyblok, publish in one click.
-            </p>
-          </div>
-          <Link
-            href="/builder/new"
-            className="group inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-ink shadow-glow transition hover:-translate-y-0.5"
-          >
-            <span aria-hidden="true" className="text-lg leading-none">
-              +
-            </span>
-            New page
-          </Link>
+      <header className="flex flex-wrap items-end justify-between gap-6 border-b border-gray-100 pb-8">
+        <div>
+          <h1 className="font-display text-4xl font-bold tracking-tight md:text-5xl">
+            Landing pages
+          </h1>
+          <p className="mt-2 text-ink-muted">
+            Generate with AI, edit in Storyblok, publish in one click.
+          </p>
         </div>
-
-        {/* Stats */}
-        <div className="relative mt-10 grid max-w-md grid-cols-3 gap-4">
-          <Stat label="Total" value={stories.length} />
-          <Stat label="Published" value={publishedCount} accent="text-green-300" />
-          <Stat label="Drafts" value={draftCount} accent="text-amber-300" />
-        </div>
+        <Link
+          href="/builder/new"
+          className="inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-ink-soft"
+        >
+          <span aria-hidden="true" className="text-base leading-none">
+            +
+          </span>
+          New page
+        </Link>
       </header>
+
+      {/* Stats */}
+      <div className="grid grid-cols-3 divide-x divide-gray-100 overflow-hidden rounded-2xl border border-gray-100 bg-white">
+        <Stat label="Total" value={stories.length} />
+        <Stat label="Published" value={publishedCount} dot="bg-emerald-500" />
+        <Stat label="Drafts" value={draftCount} dot="bg-gray-300" />
+      </div>
 
       {/* Error state */}
       {error && (
@@ -82,9 +59,9 @@ export default async function BuilderHome() {
 
       {/* Empty state */}
       {!error && !hasPages && (
-        <div className="rounded-3xl border-2 border-dashed border-gray-200 bg-white p-16 text-center">
-          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 text-3xl text-white shadow-glow">
-            ✨
+        <div className="rounded-3xl border border-dashed border-gray-200 bg-white p-16 text-center">
+          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-ink text-2xl text-white">
+            +
           </div>
           <h3 className="font-display text-2xl font-bold">No pages yet</h3>
           <p className="mx-auto mt-2 max-w-sm text-ink-muted">
@@ -99,70 +76,59 @@ export default async function BuilderHome() {
         </div>
       )}
 
-      {/* Page grid */}
+      {/* Pages */}
       {!error && hasPages && (
         <section>
-          <div className="mb-5 flex items-center justify-between">
-            <h2 className="text-sm font-semibold uppercase tracking-[0.15em] text-ink-muted">
-              All pages · {stories.length}
-            </h2>
-          </div>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {stories.map((s, i) => {
+          <h2 className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-ink-muted">
+            All pages · {stories.length}
+          </h2>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {stories.map((s) => {
               const slug = s.full_slug.replace(/^landing\//, "");
               const published = Boolean(s.published_at);
-              const grad = GRADIENTS[i % GRADIENTS.length];
               return (
                 <article
                   key={s.id}
-                  className="group flex flex-col overflow-hidden rounded-3xl bg-white shadow-soft ring-1 ring-black/[0.04] transition hover:-translate-y-1 hover:shadow-lift"
+                  className="group flex flex-col rounded-2xl border border-gray-200 bg-white p-5 transition hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-soft"
                 >
-                  {/* Gradient banner */}
-                  <div
-                    className={`relative h-24 bg-gradient-to-br ${grad}`}
-                    aria-hidden="true"
-                  >
-                    <div className="absolute inset-0 [background-image:radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.25)_1px,transparent_0)] [background-size:18px_18px] opacity-40" />
-                    <span className="absolute bottom-3 left-4 font-display text-3xl font-bold text-white/90">
-                      {s.name.charAt(0).toUpperCase()}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gray-100 font-display text-lg font-bold text-ink">
+                        {s.name.charAt(0).toUpperCase()}
+                      </span>
+                      <div className="min-w-0">
+                        <h3 className="truncate font-semibold tracking-tight">
+                          {s.name}
+                        </h3>
+                        <div className="truncate font-mono text-xs text-ink-muted">
+                          /{s.full_slug}
+                        </div>
+                      </div>
+                    </div>
+                    <span className="inline-flex shrink-0 items-center gap-1.5 text-xs font-medium text-ink-muted">
+                      <span
+                        aria-hidden="true"
+                        className={`h-1.5 w-1.5 rounded-full ${published ? "bg-emerald-500" : "bg-gray-300"}`}
+                      />
+                      {published ? "Live" : "Draft"}
                     </span>
                   </div>
 
-                  <div className="flex flex-1 flex-col p-5">
-                    <div className="flex items-start justify-between gap-2">
-                      <h3 className="truncate font-semibold tracking-tight">
-                        {s.name}
-                      </h3>
-                      <span
-                        className={`shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
-                          published
-                            ? "bg-green-100 text-green-700"
-                            : "bg-amber-100 text-amber-700"
-                        }`}
-                      >
-                        {published ? "Live" : "Draft"}
-                      </span>
-                    </div>
-                    <div className="mt-1 truncate font-mono text-xs text-ink-muted">
-                      /{s.full_slug}
-                    </div>
-
-                    <div className="mt-5 flex gap-2 pt-1">
-                      <Link
-                        href={`/landing/${slug}`}
-                        className="flex-1 rounded-full border border-gray-200 px-3 py-2 text-center text-xs font-semibold text-ink transition hover:bg-gray-50"
-                      >
-                        View
-                      </Link>
-                      <a
-                        href={`https://app.storyblok.com/#/me/spaces/${spaceId}/stories/0/0/${s.id}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex-1 rounded-full bg-ink px-3 py-2 text-center text-xs font-semibold text-white transition hover:bg-ink-soft"
-                      >
-                        Edit ↗
-                      </a>
-                    </div>
+                  <div className="mt-5 flex gap-2">
+                    <Link
+                      href={`/landing/${slug}`}
+                      className="flex-1 rounded-full border border-gray-200 px-3 py-2 text-center text-xs font-semibold text-ink transition hover:bg-gray-50"
+                    >
+                      View
+                    </Link>
+                    <a
+                      href={`https://app.storyblok.com/#/me/spaces/${spaceId}/stories/0/0/${s.id}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex-1 rounded-full bg-ink px-3 py-2 text-center text-xs font-semibold text-white transition hover:bg-ink-soft"
+                    >
+                      Edit ↗
+                    </a>
                   </div>
                 </article>
               );
@@ -171,15 +137,15 @@ export default async function BuilderHome() {
         </section>
       )}
 
-      {/* How it works (refined, secondary) */}
-      <section className="rounded-3xl border border-gray-100 bg-gray-50/70 p-8">
+      {/* How it works */}
+      <section className="rounded-3xl border border-gray-100 bg-gray-50/60 p-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <h2 className="font-display text-xl font-bold">How it works</h2>
           <a
             href={`https://app.storyblok.com/#/me/spaces/${spaceId}`}
             target="_blank"
             rel="noreferrer"
-            className="rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm font-medium text-brand transition hover:bg-indigo-50"
+            className="rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm font-medium text-ink transition hover:bg-gray-50"
           >
             Open Storyblok ↗
           </a>
@@ -197,16 +163,23 @@ export default async function BuilderHome() {
 function Stat({
   label,
   value,
-  accent = "text-white",
+  dot,
 }: {
   label: string;
   value: number;
-  accent?: string;
+  dot?: string;
 }) {
   return (
-    <div className="rounded-2xl bg-white/[0.06] px-4 py-3 ring-1 ring-white/10 backdrop-blur">
-      <div className={`font-display text-3xl font-bold ${accent}`}>{value}</div>
-      <div className="mt-0.5 text-xs uppercase tracking-wider text-white/50">
+    <div className="px-6 py-5">
+      <div className="flex items-center gap-2">
+        {dot && (
+          <span aria-hidden="true" className={`h-2 w-2 rounded-full ${dot}`} />
+        )}
+        <span className="font-display text-3xl font-bold tracking-tight">
+          {value}
+        </span>
+      </div>
+      <div className="mt-1 text-xs uppercase tracking-wider text-ink-muted">
         {label}
       </div>
     </div>
@@ -223,8 +196,8 @@ function FlowStep({
   body: string;
 }) {
   return (
-    <div className="rounded-2xl bg-white p-5 shadow-soft ring-1 ring-black/[0.04]">
-      <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-sm font-bold text-white">
+    <div className="rounded-2xl bg-white p-5 ring-1 ring-black/[0.04]">
+      <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-ink text-sm font-bold text-white">
         {n}
       </span>
       <h3 className="mt-3 font-semibold tracking-tight">{title}</h3>

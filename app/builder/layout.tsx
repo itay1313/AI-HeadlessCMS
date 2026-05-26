@@ -15,7 +15,7 @@ export default async function BuilderLayout({
       <header className="sticky top-0 z-10 border-b border-gray-200 bg-white/80 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
           <Link href="/builder" className="flex items-center gap-2">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-gradient-to-br from-indigo-500 to-purple-600 text-sm font-bold text-white">
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-ink text-sm font-bold text-white">
               AI
             </span>
             <span className="font-bold">Landing Studio</span>
