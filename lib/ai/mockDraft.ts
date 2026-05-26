@@ -1,4 +1,5 @@
 import type { LandingPageDraft, Brief } from "@/lib/validation/landingPageSchema";
+import { templateFromString } from "@/lib/theme";
 
 // Used when AI_MOCK=true or there's no Anthropic key. Lets you exercise the
 // full Storyblok save/publish/render flow without spending credits.
@@ -8,10 +9,13 @@ export function mockDraft(brief: Brief): LandingPageDraft {
     text.match(/[a-zA-Z][a-zA-Z0-9]+/g)?.[0]?.toLowerCase() ?? "demo";
   const slug = `${firstWord}-${Date.now().toString(36).slice(-4)}`;
   const headline = capitalize(text.split(/[.!?\n]/)[0]?.slice(0, 60) ?? "Welcome");
+  // Different prompts → different templates (deterministic).
+  const template = templateFromString(text);
 
   return {
     pageName: `Demo · ${capitalize(firstWord)}`,
     slug,
+    template,
     seo: {
       metaTitle: `${capitalize(firstWord)} — built with AI`,
       metaDescription:

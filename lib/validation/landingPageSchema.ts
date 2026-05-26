@@ -6,6 +6,7 @@ import {
   IMAGE_POSITIONS,
   FORM_TYPES,
 } from "@/lib/ai/registry";
+import { TEMPLATE_NAMES } from "@/lib/theme";
 
 const slug = z
   .string()
@@ -166,6 +167,8 @@ export const sectionSchema = z.discriminatedUnion("component", [
 export const landingPageDraftSchema = z.object({
   pageName: z.string().min(3).max(80),
   slug,
+  // AI-chosen design template (accent + font + style). Same content, different look.
+  template: z.enum(TEMPLATE_NAMES).default("modern"),
   seo: seoSchema,
   sections: z.array(sectionSchema).min(1).max(20),
   meta: z

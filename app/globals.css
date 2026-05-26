@@ -3,6 +3,13 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    /* Default theme (indigo + grotesk). Per-page templates override these. */
+    --brand-rgb: 99 102 241;
+    --brand-dark-rgb: 67 56 202;
+    --brand-light-rgb: 165 180 252;
+    --font-display: var(--font-grotesk);
+  }
   html {
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;

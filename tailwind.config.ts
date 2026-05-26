@@ -9,10 +9,12 @@ const config: Config = {
         display: ["var(--font-display)", "var(--font-sans)", "sans-serif"],
       },
       colors: {
+        // Themeable accent — driven by CSS vars so per-page templates can
+        // recolor every `brand` utility (incl. /alpha) without code changes.
         brand: {
-          DEFAULT: "#6366f1",
-          dark: "#4338ca",
-          light: "#a5b4fc",
+          DEFAULT: "rgb(var(--brand-rgb) / <alpha-value>)",
+          dark: "rgb(var(--brand-dark-rgb) / <alpha-value>)",
+          light: "rgb(var(--brand-light-rgb) / <alpha-value>)",
         },
         ink: {
           DEFAULT: "#0a0a0f",
